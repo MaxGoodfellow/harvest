@@ -1,0 +1,80 @@
+<h1><%= mode === 'create' ? 'Add Material' : 'Edit — ' + item.name %></h1>
+
+<% function err(field) { return (errors && errors[field]) ? '<p class="field-error">' + errors[field].join(', ') + '</p>' : ''; } %>
+
+<form method="post" action="<%= mode === 'create' ? basePath + '/inventory' : basePath + '/inventory/' + item.id %>">
+  <input type="hidden" name="_csrf" value="<%= csrfToken %>" />
+  <label>Name
+    <input type="text" name="name" value="<%= item.name || '' %>" required />
+  </label>
+  <%- err('name') %>
+
+  <label>Creature (source)
+    <select name="creature_id">
+      <option value="">—</option>
+      <% creatures.forEach(function(c) { %>
+        <option value="<%= c.id %>" <%= Number(item.creature_id) === c.id ? 'selected' : '' %>><%= c.name %></option>
+      <% }) %>
+    </select>
+  </label>
+
+  <label>Quality
+    <select name="quality">
+      <% ['Poor','Standard','Pristine','Ruined'].forEach(function(q) { %>
+        <option value="<%= q %>" <%= (item.quality || 'Standard') === q ? 'selected' : '' %>><%= q %></option>
+      <% }) %>
+    </select>
+  </label>
+
+  <label>Crafting value (cp)
+    <input type="number" name="crafting_value_cp" value="<%= item.crafting_value_cp || 0 %>" />
+  </label>
+  <%- err('crafting_value_cp') %>
+
+  <label>Status
+    <select name="status">
+      <% STATUSES.forEach(function(s) { %>
+        <option value="<%= s %>" <%= (item.status || 'available') === s ? 'selected' : '' %>><%= s %></option>
+      <% }) %>
+    </select>
+  </label>
+
+  <label>Condition
+    <input type="text" name="condition" value="<%= item.condition || '' %>" placeholder="e.g. fresh, salted, cured" />
+  </label>
+
+  <label>Preserved until
+    <input type="date" name="preserved_until" value="<%= item.preserved_until ? new Date(item.preserved_until).toISOString().slice(0,10) : '' %>" />
+  </label>
+
+  <label>Campaign
+    <select name="campaign_id">
+      <option value="">—</option>
+      <% campaigns.forEach(function(c) { %>
+        <option value="<%= c.id %>" <%= Number(item.campaign_id) === c.id ? 'selected' : '' %>><%= c.name %></option>
+      <% }) %>
+    </select>
+  </label>
+
+  <label>Location
+    <select name="location_id">
+      <option value="">—</option>
+      <% locations.forEach(function(l) { %>
+        <option value="<%= l.id %>" <%= Number(item.location_id) === l.id ? 'selected' : '' %>><%= l.name %></option>
+      <% }) %>
+    </select>
+  </label>
+
+  <label>Notes
+    <textarea name="notes"><%= item.notes || '' %></textarea>
+  </label>
+
+  <button type="submit"><%= mode === 'create' ? 'Add' : 'Save' %></button>
+</form>
+
+<% if (mode === 'edit') { %>
+  <form method="post" action="<%= basePath %>/inventory/<%= item.id %>/archive" class="no-card" style="margin-top:1rem;">
+    <input type="hidden" name="_csrf" value="<%= csrfToken %>" />
+    <button type="submit" class="btn-secondary">Archive</button>
+  </form>
+<% } %>

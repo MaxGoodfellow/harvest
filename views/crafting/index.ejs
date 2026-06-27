@@ -1,0 +1,27 @@
+<h1>Crafting Uses</h1>
+
+<p><a class="btn" href="<%= basePath %>/crafting/new">+ New Project</a></p>
+
+<table>
+  <thead>
+    <tr><th>Name</th><th>Item cost</th><th>Applied</th><th>Remaining</th><th>Status</th><th>Flags</th></tr>
+  </thead>
+  <tbody>
+    <% projects.forEach(function(p) { %>
+      <tr>
+        <td><a href="<%= basePath %>/crafting/<%= p.id %>"><%= p.name %></a></td>
+        <td><%= formatCp(p.item_gp_cost_cp) %></td>
+        <td><%= formatCp(p.total_applied_cp) %></td>
+        <td><%= formatCp(Math.max(0, p.item_gp_cost_cp - p.total_applied_cp)) %></td>
+        <td><%= p.status %></td>
+        <td>
+          <% if (p.is_formula_required) { %><span class="chip">Formula required</span><% } %>
+          <% if (p.is_formula_unlocking) { %><span class="chip">Unlocks formula</span><% } %>
+        </td>
+      </tr>
+    <% }) %>
+    <% if (!projects.length) { %>
+      <tr><td colspan="6">No crafting projects yet.</td></tr>
+    <% } %>
+  </tbody>
+</table>

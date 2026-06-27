@@ -1,0 +1,28 @@
+<h1>Session Log</h1>
+
+<p><a class="btn" href="<%= basePath %>/sessions/new">+ New Session</a></p>
+
+<table>
+  <thead>
+    <tr><th>Name</th><th>Date</th><th>Attempts</th><th></th></tr>
+  </thead>
+  <tbody>
+    <% sessions.forEach(function(s) { %>
+      <tr>
+        <td><a href="<%= basePath %>/sessions/<%= s.id %>"><%= s.name %></a></td>
+        <td><%= s.session_date ? new Date(s.session_date).toISOString().slice(0,10) : '—' %></td>
+        <td><%= s.attempt_count %></td>
+        <td><a href="<%= basePath %>/sessions/<%= s.id %>/edit">Edit</a></td>
+      </tr>
+    <% }) %>
+    <% if (!sessions.length) { %>
+      <tr><td colspan="4">No sessions yet.</td></tr>
+    <% } %>
+  </tbody>
+</table>
+
+<h2>Unassigned attempts</h2>
+<p>Attempts recorded from the Calculator that haven't been attached to a session yet.</p>
+<%- include('../partials/attempts-table', { attempts: unassignedAttempts, sessions: sessions }) %>
+
+<script src="<%= basePath %>/js/session-assign.js"></script>

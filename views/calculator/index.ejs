@@ -1,0 +1,220 @@
+<h1>Harvest Calculator</h1>
+
+<% if (query.saved) { %><div class="warning">Attempt saved to the session log.</div><% } %>
+
+<form method="get" action="<%= basePath %>/calculator" id="calculator-form">
+  <label>Monster
+    <select name="creatureId" id="creatureId">
+      <option value="">— Select a monster —</option>
+      <% creatures.forEach(function(c) { %>
+        <option value="<%= c.id %>" <%= String(query.creatureId) === String(c.id) ? 'selected' : '' %>>
+          <%= c.name %> (Lvl <%= c.level %>)
+        </option>
+      <% }) %>
+    </select>
+  </label>
+
+  <% if (calculation && calculation.creature) { %>
+    <% var creature = calculation.creature; %>
+    <label>Component / Signature row
+      <select name="target" id="target">
+        <option value="">— Select —</option>
+        <% if (creature.components.length) { %>
+          <optgroup label="Components">
+            <% creature.components.forEach(function(c) { %>
+              <option value="component:<%= c.id %>" <%= query.target === 'component:' + c.id ? 'selected' : '' %>><%= c.name %></option>
+            <% }) %>
+          </optgroup>
+        <% } %>
+        <% if (creature.signatureTable && creature.signatureTable.rows.length) { %>
+          <optgroup label="Signature rows">
+            <% creature.signatureTable.rows.forEach(function(r) { %>
+              <option value="signature:<%= r.id %>" <%= query.target === 'signature:' + r.id ? 'selected' : '' %>><%= r.name %></option>
+            <% }) %>
+          </optgroup>
+        <% } %>
+      </select>
+    </label>
+
+    <% if (calculation.selection) { %>
+      <label>Skill used
+        <select name="skillId">
+          <% calculation.skillOptions.forEach(function(s) { %>
+            <option value="<%= s.id %>" <%= Number(calculation.selectedSkillId) === s.id ? 'selected' : '' %>><%= s.name %></option>
+          <% }) %>
+        </select>
+      </label>
+
+      <label>Body condition
+        <select name="bodyConditionId">
+          <option value="">Fresh / none</option>
+          <% bodyConditionModifiers.forEach(function(b) { %>
+            <option value="<%= b.id %>" <%= String(query.bodyConditionId) === String(b.id) ? 'selected' : '' %>>
+              <%= b.name %><%= b.is_impossible ? ' (impossible)' : ' (' + (b.dc_modifier >= 0 ? '+' : '') + b.dc_modifier + ')' %>
+            </option>
+          <% }) %>
+        </select>
+      </label>
+
+      <label>Time since death
+        <select name="deathTimeId">
+          <option value="">≤1 hour</option>
+          <% deathTimeModifiers.forEach(function(d) { %>
+            <option value="<%= d.id %>" <%= String(query.deathTimeId) === String(d.id) ? 'selected' : '' %>>
+              <%= d.name %> (<%= d.dc_modifier >= 0 ? '+' : '' %><%= d.dc_modifier %>)
+            </option>
+          <% }) %>
+        </select>
+      </label>
+
+      <label>Tools
+        <select name="toolId">
+          <option value="">None</option>
+          <% toolModifiers.forEach(function(t) { %>
+            <option value="<%= t.id %>" <%= String(query.toolId) === String(t.id) ? 'selected' : '' %>>
+              <%= t.name %> (<%= t.dc_modifier >= 0 ? '+' : '' %><%= t.dc_modifier %>)
+            </option>
+          <% }) %>
+        </select>
+      </label>
+
+      <label>Environment
+        <select name="environmentId">
+          <option value="">None</option>
+          <% environmentModifiers.forEach(function(e) { %>
+            <option value="<%= e.id %>" <%= String(query.environmentId) === String(e.id) ? 'selected' : '' %>>
+              <%= e.name %> (<%= e.dc_modifier >= 0 ? '+' : '' %><%= e.dc_modifier %>)
+            </option>
+          <% }) %>
+        </select>
+      </label>
+
+      <% if (calculation.selection.type === 'component' && calculation.loreOptions.length) { %>
+        <label>Lore
+          <select name="loreId">
+            <option value="">None</option>
+            <% calculation.loreOptions.forEach(function(l) { %>
+              <option value="<%= l.id %>" <%= String(query.loreId) === String(l.id) ? 'selected' : '' %>>
+                <%= l.name %> (<%= l.dc_modifier %>)
+              </option>
+            <% }) %>
+          </select>
+        </label>
+      <% } %>
+
+      <label>Buyer
+        <select name="buyerId">
+          <option value="">— none / use manual % —</option>
+          <% buyers.forEach(function(b) { %>
+            <option value="<%= b.id %>" <%= String(query.buyerId) === String(b.id) ? 'selected' : '' %>>
+              <%= b.name %> (<%= b.buyer_type %>, <%= b.default_sale_percentage %>%)
+            </option>
+          <% }) %>
+        </select>
+      </label>
+
+      <label>Buyer sale % override (blank = use buyer's default, or <%= settings.default_sale_percentage %>% if no buyer)
+        <input type="number" step="0.01" name="buyerPct" value="<%= query.buyerPct || '' %>" />
+      </label>
+
+      <label>Roll die (d20)
+        <input type="number" id="rollDie" name="rollDie" min="1" max="20" value="<%= query.rollDie || '' %>" />
+      </label>
+      <label>Skill bonus
+        <input type="number" id="skillBonus" name="skillBonus" value="<%= query.skillBonus || '' %>" />
+      </label>
+      <p id="roll-total-preview" class="preview-text"></p>
+      <label>GM override quality
+        <select name="gmOverrideQuality">
+          <option value="">— none —</option>
+          <% ['Poor','Standard','Pristine','Ruined'].forEach(function(q) { %>
+            <option value="<%= q %>" <%= query.gmOverrideQuality === q ? 'selected' : '' %>><%= q %></option>
+          <% }) %>
+        </select>
+      </label>
+    <% } %>
+  <% } %>
+
+  <button type="submit">Calculate</button>
+</form>
+
+<% if (calculation && calculation.selection) { %>
+  <h2>Result</h2>
+
+  <% if (calculation.impossible) { %>
+    <div class="warning">This component is impossible to harvest in this body condition.</div>
+  <% } else { %>
+    <ul class="dc-breakdown">
+      <% calculation.breakdown.modifiers.forEach(function(m) { %>
+        <li><span><%= m.label %></span><span><%= m.value >= 0 ? '+' : '' %><%= m.value %></span></li>
+      <% }) %>
+    </ul>
+    <p><strong>Final DC:</strong> <%= calculation.breakdown.dc %></p>
+    <p><strong>Time:</strong> <%= calculation.breakdown.timeDisplay || formatMinutes(calculation.breakdown.timeMinutes) %></p>
+    <p><strong>Skill used:</strong>
+      <% var chosenSkill = calculation.skillOptions.find(function(s) { return s.id === Number(calculation.selectedSkillId); }); %>
+      <%= chosenSkill ? chosenSkill.name : '—' %>
+      <% if (calculation.skillOptions.length > 1) { %>(or <%= calculation.skillOptions.filter(function(s) { return !chosenSkill || s.id !== chosenSkill.id; }).map(function(s) { return s.name; }).join(', ') %>)<% } %>
+    </p>
+
+    <% if (calculation.rollResult) { %>
+      <% var r = calculation.rollResult; %>
+      <p>
+        <strong>Roll total:</strong> <%= r.total %> (die <%= r.naturalDie %> + skill bonus <%= r.skillBonus %>)<br />
+        <strong>Degree of success:</strong> <%= r.degree.replace('_', ' ') %>
+        <%= r.shifted ? '(shifted by natural ' + r.naturalDie + ')' : '' %><br />
+        <strong>Quality:</strong> <%= r.quality %>
+      </p>
+
+      <% if (calculation.buyerWarning) { %>
+        <div class="warning"><%= calculation.buyerWarning %></div>
+      <% } %>
+
+      <% if (r.valueResult) { %>
+        <p>
+          <strong>Crafting value:</strong> <%= formatCp(r.valueResult.valueCp) %>
+          <%= r.valueResult.cappedAt100 ? '(capped at Standard value — pristine_can_exceed_cap is off)' : '' %><br />
+          <strong>Sale value:</strong> <%= formatCp(r.saleValueCp) %>
+          <%= calculation.selectedBuyer ? '(to ' + calculation.selectedBuyer.name + ' at ' + calculation.buyerPct + '%)' : '(at ' + calculation.buyerPct + '%)' %>
+        </p>
+      <% } %>
+
+      <% if (r.resultText) { %><p><%= r.resultText %></p><% } %>
+
+      <% if (r.hazard) { %>
+        <div class="warning">
+          <strong>Hazard triggered!</strong> <%= r.hazard.damageDice %> damage,
+          basic <%= r.hazard.saveType %> save vs DC <%= r.hazard.hazardDc %>.
+        </div>
+      <% } %>
+
+      <div class="actions">
+        <form method="post" action="<%= basePath %>/calculator/save-attempt" class="no-card">
+          <input type="hidden" name="_csrf" value="<%= csrfToken %>" />
+          <% ['creatureId','target','skillId','bodyConditionId','deathTimeId','toolId','environmentId','loreId','buyerId','buyerPct','rollDie','skillBonus','gmOverrideQuality'].forEach(function(field) { %>
+            <input type="hidden" name="<%= field %>" value="<%= query[field] || '' %>" />
+          <% }) %>
+          <label class="inline-field">Session
+            <select name="sessionId">
+              <option value="">— None —</option>
+              <% sessions.forEach(function(s) { %>
+                <option value="<%= s.id %>"><%= s.name %></option>
+              <% }) %>
+            </select>
+          </label>
+          <button type="submit">Save as attempt</button>
+        </form>
+
+        <form method="post" action="<%= basePath %>/calculator/add-to-inventory" class="no-card">
+          <input type="hidden" name="_csrf" value="<%= csrfToken %>" />
+          <% ['creatureId','target','skillId','bodyConditionId','deathTimeId','toolId','environmentId','loreId','buyerId','buyerPct','rollDie','skillBonus','gmOverrideQuality'].forEach(function(field) { %>
+            <input type="hidden" name="<%= field %>" value="<%= query[field] || '' %>" />
+          <% }) %>
+          <button type="submit" class="btn-secondary">Add to Inventory</button>
+        </form>
+      </div>
+    <% } %>
+  <% } %>
+<% } %>
+
+<script src="<%= basePath %>/js/calculator.js"></script>

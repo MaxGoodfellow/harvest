@@ -1,0 +1,30 @@
+<h1><%= mode === 'create' ? 'New Session' : 'Edit ' + session.name %></h1>
+
+<% function err(field) { return (errors && errors[field]) ? '<p class="field-error">' + errors[field].join(', ') + '</p>' : ''; } %>
+
+<form method="post" action="<%= mode === 'create' ? basePath + '/sessions' : basePath + '/sessions/' + session.id %>">
+  <input type="hidden" name="_csrf" value="<%= csrfToken %>" />
+  <label>Name
+    <input type="text" name="name" value="<%= session.name || '' %>" required />
+  </label>
+  <%- err('name') %>
+
+  <label>Date
+    <input type="date" name="session_date" value="<%= session.session_date ? new Date(session.session_date).toISOString().slice(0,10) : '' %>" />
+  </label>
+
+  <label>Campaign
+    <select name="campaign_id">
+      <option value="">—</option>
+      <% campaigns.forEach(function(c) { %>
+        <option value="<%= c.id %>" <%= Number(session.campaign_id) === c.id ? 'selected' : '' %>><%= c.name %></option>
+      <% }) %>
+    </select>
+  </label>
+
+  <label>Notes
+    <textarea name="notes"><%= session.notes || '' %></textarea>
+  </label>
+
+  <button type="submit"><%= mode === 'create' ? 'Create' : 'Save' %></button>
+</form>

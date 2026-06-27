@@ -1,0 +1,38 @@
+<h1><%= mode === 'create' ? 'New Crafting Project' : 'Edit ' + project.name %></h1>
+
+<% function err(field) { return (errors && errors[field]) ? '<p class="field-error">' + errors[field].join(', ') + '</p>' : ''; } %>
+
+<form method="post" action="<%= mode === 'create' ? basePath + '/crafting' : basePath + '/crafting/' + project.id %>">
+  <input type="hidden" name="_csrf" value="<%= csrfToken %>" />
+  <label>Item name
+    <input type="text" name="name" value="<%= project.name || '' %>" required />
+  </label>
+  <%- err('name') %>
+
+  <label>Item gp cost (cp)
+    <input type="number" name="item_gp_cost_cp" value="<%= project.item_gp_cost_cp || 0 %>" required />
+  </label>
+  <%- err('item_gp_cost_cp') %>
+
+  <label>Status
+    <input type="text" name="status" value="<%= project.status || 'planned' %>" placeholder="planned, in_progress, completed…" />
+  </label>
+
+  <label class="checkbox-field"><input type="checkbox" name="is_formula_required" <%= project.is_formula_required ? 'checked' : '' %> /> Formula required to craft this</label>
+  <label class="checkbox-field"><input type="checkbox" name="is_formula_unlocking" <%= project.is_formula_unlocking ? 'checked' : '' %> /> Crafting this unlocks a formula</label>
+
+  <label>Campaign
+    <select name="campaign_id">
+      <option value="">—</option>
+      <% campaigns.forEach(function(c) { %>
+        <option value="<%= c.id %>" <%= Number(project.campaign_id) === c.id ? 'selected' : '' %>><%= c.name %></option>
+      <% }) %>
+    </select>
+  </label>
+
+  <label>Notes
+    <textarea name="notes"><%= project.notes || '' %></textarea>
+  </label>
+
+  <button type="submit"><%= mode === 'create' ? 'Create' : 'Save' %></button>
+</form>

@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="base-path" content="<%= basePath %>" />
+  <title><%= title %> · PF2e Harvesting Manager</title>
+  <link rel="stylesheet" href="<%= basePath %>/css/style.css" />
+</head>
+<body>
+  <%
+    var navItems = [
+      ['/dashboard', 'Dashboard'],
+      ['/monsters', 'Monsters'],
+      ['/calculator', 'Calculator'],
+      ['/buyers', 'Buyers'],
+      ['/inventory', 'Inventory'],
+      ['/sessions', 'Sessions'],
+      ['/crafting', 'Crafting'],
+      ['/import-export', 'Import/Export'],
+    ];
+    var path = typeof currentPath !== 'undefined' ? currentPath : '';
+  %>
+  <header class="site-header">
+    <a class="brand" href="<%= basePath %>/dashboard">Harvest</a>
+    <nav>
+      <% navItems.forEach(function(item) { %>
+        <a href="<%= basePath + item[0] %>" class="<%= path.indexOf(item[0]) === 0 ? 'active' : '' %>"><%= item[1] %></a>
+      <% }) %>
+    </nav>
+    <% if (typeof isAuthenticated !== 'undefined' && isAuthenticated) { %>
+      <form method="post" action="<%= basePath %>/logout" class="inline">
+        <input type="hidden" name="_csrf" value="<%= csrfToken %>" />
+        <button type="submit" class="btn-secondary">Log out</button>
+      </form>
+    <% } %>
+  </header>
+  <main>
+    <%- body %>
+  </main>
+</body>
+</html>

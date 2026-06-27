@@ -1,0 +1,109 @@
+<h1>Import / Export</h1>
+
+<% if (error) { %><div class="warning"><%= error %></div><% } %>
+<% if (csvErrors) { %>
+  <div class="warning">
+    <strong>The CSV file has <%= csvErrors.length %> problem<%= csvErrors.length === 1 ? '' : 's' %> — nothing was imported:</strong>
+    <ul>
+      <% csvErrors.forEach(function(e) { %><li><%= e %></li><% }) %>
+    </ul>
+  </div>
+<% } %>
+<% if (result) { %>
+  <div class="warning">Import complete — <%= result.creatures %> creature(s), <%= result.buyers %> buyer(s) created or updated.</div>
+<% } %>
+<% if (csvReport) { %>
+  <div class="warning">
+    <strong>CSV import finished — <%= csvReport.successCount %> monster(s) created or updated<%= csvReport.failures.length ? ', ' + csvReport.failures.length + ' failed' : '' %>.</strong>
+    <% if (csvReport.failures.length) { %>
+      <p>These monsters were skipped (everything else in the file was still imported):</p>
+      <ul>
+        <% csvReport.failures.forEach(function(f) { %><li><%= f.name %> — <%= f.error %></li><% }) %>
+      </ul>
+      <p>Fix the issue (e.g. seed a missing reference) and re-run the same file — already-imported monsters will just be updated, not duplicated.</p>
+    <% } %>
+  </div>
+<% } %>
+
+<h2>Export</h2>
+<p>All exports are local file downloads — nothing leaves this server.</p>
+<ul>
+  <li><a href="<%= basePath %>/import-export/json">Full JSON export</a> (creatures, components, signature tables, buyers)</li>
+  <li><a href="<%= basePath %>/import-export/monsters.csv">Monster list (CSV)</a></li>
+  <li><a href="<%= basePath %>/import-export/inventory.csv">Material inventory (CSV)</a></li>
+</ul>
+<p>For a full database backup (every table, not just creatures/buyers), use <code>npm run db:backup</code> on the server.</p>
+
+<h2>Import monsters (CSV)</h2>
+<p>
+  <a href="<%= basePath %>/import-export/monsters-template.csv">Download the template CSV</a> —
+  it includes a worked example (Wolf and its 4 components) showing the format described below.
+</p>
+<p>
+  <strong>One row = one component.</strong> A monster with several components spans several rows;
+  repeat the Monster/Level/Size/etc. columns identically on every row for that monster — only the
+  <em>first</em> row for a given Monster Name is actually read for those columns, so an accidental
+  difference on a later row is silently ignored rather than causing an error. Leave every
+  <code>Component …</code> column blank on a row to import a monster with no component from that row
+  (e.g. a monster with zero components yet).
+</p>
+<p>
+  Re-importing the same file is safe to repeat — monsters and components are matched and updated by
+  name, not duplicated. Harvest tags, skills, and hazard types referenced by name must already exist
+  in this database (seeded by <code>npm run db:seed</code>, or visible on the relevant admin pages).
+  Signature tables (e.g. the Black Dragon's Acid Sac row) can't be created via this CSV — use the
+  full JSON import or the UI for those.
+</p>
+<p>
+  Each monster is imported in its own transaction, so on a large file one bad row only skips that
+  monster — it doesn't roll back everything else. Skipped monsters are listed after the import
+  finishes; fix the underlying issue and re-run the same file to pick up just those.
+</p>
+
+<form method="post" action="<%= basePath %>/import-export/monsters.csv" id="csv-import-form">
+  <input type="hidden" name="_csrf" value="<%= csrfToken %>" />
+  <label>CSV file
+    <input type="file" id="csv-import-file-input" accept=".csv,text/csv" />
+  </label>
+  <textarea name="csvData" id="csv-import-data" style="display:none;"></textarea>
+  <button type="submit" id="csv-import-submit" disabled>Import monsters</button>
+</form>
+
+<details>
+  <summary>CSV column reference (<%= fieldDocs.length %> columns)</summary>
+  <table>
+    <thead>
+      <tr><th>Column</th><th>Level</th><th>Required</th><th>Type / allowed values</th><th>What it does</th></tr>
+    </thead>
+    <tbody>
+      <% fieldDocs.forEach(function(f) { %>
+        <tr>
+          <td><code><%= f.header %></code></td>
+          <td><%= f.level %></td>
+          <td><%= f.required === true ? 'Yes' : (f.required === false ? 'No' : f.required) %></td>
+          <td><%= f.type %></td>
+          <td><%= f.description %></td>
+        </tr>
+      <% }) %>
+    </tbody>
+  </table>
+</details>
+
+<h2>Import full data (JSON)</h2>
+<p>
+  Re-importing a previously exported JSON file is safe to repeat — creatures
+  and buyers are matched and updated by name, not duplicated. Reference data
+  (skills, harvest tags, hazard types, etc.) must already exist in this
+  database (it's seeded by <code>npm run db:seed</code>), since components
+  and signature rows are matched to it by name.
+</p>
+<form method="post" action="<%= basePath %>/import-export/json" id="import-form">
+  <input type="hidden" name="_csrf" value="<%= csrfToken %>" />
+  <label>JSON file
+    <input type="file" id="import-file-input" accept="application/json" />
+  </label>
+  <textarea name="jsonData" id="import-json-data" style="display:none;"></textarea>
+  <button type="submit" id="import-submit" disabled>Import</button>
+</form>
+
+<script src="<%= basePath %>/js/import-file.js"></script>

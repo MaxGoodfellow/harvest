@@ -1,0 +1,11 @@
+<h1><%= session.name %></h1>
+
+<p><%= session.session_date ? new Date(session.session_date).toISOString().slice(0,10) : 'No date set' %></p>
+<% if (session.notes) { %><p><%= session.notes %></p><% } %>
+
+<p><a class="btn" href="<%= basePath %>/sessions/<%= session.id %>/edit">Edit</a></p>
+
+<h2>Attempts</h2>
+<%- include('../partials/attempts-table', { attempts: attempts, sessions: sessions }) %>
+
+<script src="<%= basePath %>/js/session-assign.js"></script>

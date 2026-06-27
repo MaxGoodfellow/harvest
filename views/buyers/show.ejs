@@ -1,0 +1,30 @@
+<h1><%= buyer.name %></h1>
+
+<p>
+  <%= buyer.buyer_type %> · Default sale: <%= buyer.default_sale_percentage %>%
+  <% if (buyer.archived_at) { %><span class="chip">Archived</span><% } %>
+</p>
+
+<p>Accepts: <%= buyer.acceptedTags.join(', ') || 'No restriction' %></p>
+<p>Rejects: <%= buyer.rejectedTags.join(', ') || 'None' %></p>
+
+<% if (buyer.moral_legal_warning) { %>
+  <div class="warning"><%= buyer.moral_legal_warning %></div>
+<% } %>
+
+<% if (buyer.notes) { %><p><%= buyer.notes %></p><% } %>
+
+<div class="actions">
+  <a class="btn" href="<%= basePath %>/buyers/<%= buyer.id %>/edit">Edit</a>
+  <% if (buyer.archived_at) { %>
+    <form method="post" action="<%= basePath %>/buyers/<%= buyer.id %>/unarchive">
+      <input type="hidden" name="_csrf" value="<%= csrfToken %>" />
+      <button type="submit" class="btn-secondary">Unarchive</button>
+    </form>
+  <% } else { %>
+    <form method="post" action="<%= basePath %>/buyers/<%= buyer.id %>/archive">
+      <input type="hidden" name="_csrf" value="<%= csrfToken %>" />
+      <button type="submit" class="btn-secondary">Archive</button>
+    </form>
+  <% } %>
+</div>

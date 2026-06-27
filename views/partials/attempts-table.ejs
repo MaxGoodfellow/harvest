@@ -1,0 +1,42 @@
+<table>
+  <thead>
+    <tr>
+      <th>Creature</th><th>Action</th><th>Skill</th><th>DC</th><th>Roll</th>
+      <th>Degree</th><th>Quality</th><th>Value</th><th>Hazard</th><th>When</th>
+      <% if (typeof sessions !== 'undefined') { %><th>Session</th><% } %>
+    </tr>
+  </thead>
+  <tbody>
+    <% attempts.forEach(function(a) { %>
+      <tr>
+        <td><%= a.creature_name %></td>
+        <td><%= a.component_name || a.signature_row_name || '—' %></td>
+        <td><%= a.skill_name || '—' %></td>
+        <td><%= a.final_dc %></td>
+        <td><%= a.roll_total !== null ? a.roll_total : '—' %><%= a.natural_die !== null ? ' (nat ' + a.natural_die + ')' : '' %></td>
+        <td><%= a.degree_of_success ? a.degree_of_success.replace('_', ' ') : '—' %></td>
+        <td><%= a.quality || '—' %></td>
+        <td><%= a.crafting_value_cp !== null ? formatCp(a.crafting_value_cp) : '—' %></td>
+        <td><%= a.hazard_triggered ? (a.hazard_damage_dice || 'Yes') : '—' %></td>
+        <td><%= new Date(a.attempted_at).toLocaleString() %></td>
+        <% if (typeof sessions !== 'undefined') { %>
+          <td>
+            <form method="post" action="<%= basePath %>/sessions/attempts/<%= a.id %>/assign" class="session-assign-form">
+              <input type="hidden" name="_csrf" value="<%= csrfToken %>" />
+              <input type="hidden" name="returnTo" value="<%= currentPath %>" />
+              <select name="sessionId" class="session-assign-select">
+                <option value="">— Unassigned —</option>
+                <% sessions.forEach(function(s) { %>
+                  <option value="<%= s.id %>" <%= a.harvest_session_id === s.id ? 'selected' : '' %>><%= s.name %></option>
+                <% }) %>
+              </select>
+            </form>
+          </td>
+        <% } %>
+      </tr>
+    <% }) %>
+    <% if (!attempts.length) { %>
+      <tr><td colspan="11">No attempts recorded yet.</td></tr>
+    <% } %>
+  </tbody>
+</table>

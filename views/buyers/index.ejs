@@ -1,0 +1,30 @@
+<h1>Buyers / Markets</h1>
+
+<p>
+  <a class="btn" href="<%= basePath %>/buyers/new">+ New Buyer</a>
+  <a class="chip <%= includeArchived ? 'active' : '' %>" href="<%= basePath %>/buyers?includeArchived=<%= includeArchived ? '0' : '1' %>">Include archived</a>
+</p>
+
+<table>
+  <thead>
+    <tr><th>Name</th><th>Type</th><th>Sale %</th><th>Accepts</th><th>Rejects</th><th></th></tr>
+  </thead>
+  <tbody>
+    <% buyers.forEach(function(b) { %>
+      <tr>
+        <td>
+          <a href="<%= basePath %>/buyers/<%= b.id %>"><%= b.name %></a>
+          <% if (b.archived_at) { %><span class="chip">Archived</span><% } %>
+        </td>
+        <td><%= b.buyer_type %></td>
+        <td><%= b.default_sale_percentage %>%</td>
+        <td><%= b.acceptedTags.join(', ') || '—' %></td>
+        <td><%= b.rejectedTags.join(', ') || '—' %></td>
+        <td><a href="<%= basePath %>/buyers/<%= b.id %>/edit">Edit</a></td>
+      </tr>
+    <% }) %>
+    <% if (!buyers.length) { %>
+      <tr><td colspan="6">No buyers yet.</td></tr>
+    <% } %>
+  </tbody>
+</table>

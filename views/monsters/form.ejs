@@ -1,0 +1,123 @@
+<h1><%= mode === 'create' ? 'New Monster' : 'Edit ' + creature.name %></h1>
+
+<% function err(field) { return (errors && errors[field]) ? '<p class="field-error">' + errors[field].join(', ') + '</p>' : ''; } %>
+
+<form method="post" action="<%= mode === 'create' ? basePath + '/monsters' : basePath + '/monsters/' + creature.id %>">
+  <input type="hidden" name="_csrf" value="<%= csrfToken %>" />
+  <label>Name
+    <input type="text" name="name" value="<%= creature.name || '' %>" required />
+  </label>
+  <%- err('name') %>
+
+  <label>Level
+    <input type="number" id="level" name="level" value="<%= creature.level !== undefined ? creature.level : '' %>" min="-1" max="30" required />
+  </label>
+  <%- err('level') %>
+
+  <p id="autofill-preview" class="preview-text"></p>
+
+  <label>Size
+    <select name="size" required>
+      <% SIZES.forEach(function(s) { %>
+        <option value="<%= s %>" <%= creature.size === s ? 'selected' : '' %>><%= s %></option>
+      <% }) %>
+    </select>
+  </label>
+
+  <label>Rarity
+    <select name="rarity">
+      <% RARITIES.forEach(function(r) { %>
+        <option value="<%= r %>" <%= (creature.rarity || 'common') === r ? 'selected' : '' %>><%= r %></option>
+      <% }) %>
+    </select>
+  </label>
+
+  <label>Creature type
+    <input type="text" name="creature_type" value="<%= creature.creature_type || '' %>" required />
+  </label>
+  <%- err('creature_type') %>
+
+  <label>Intelligence category
+    <select name="intelligence_category">
+      <% INTELLIGENCE_CATEGORIES.forEach(function(i) { %>
+        <option value="<%= i %>" <%= (creature.intelligence_category || 'Animal-level') === i ? 'selected' : '' %>><%= i %></option>
+      <% }) %>
+    </select>
+  </label>
+
+  <label>Harvest tier
+    <select name="harvest_tier">
+      <% [0,1,2,3].forEach(function(t) { %>
+        <option value="<%= t %>" <%= Number(creature.harvest_tier) === t ? 'selected' : '' %>><%= t %></option>
+      <% }) %>
+    </select>
+  </label>
+
+  <label>Required proficiency
+    <select name="required_proficiency">
+      <% PROFICIENCIES.forEach(function(p) { %>
+        <option value="<%= p %>" <%= (creature.required_proficiency || 'Trained') === p ? 'selected' : '' %>><%= p %></option>
+      <% }) %>
+    </select>
+  </label>
+
+  <label>Campaign
+    <select name="campaign_id">
+      <option value="">—</option>
+      <% campaigns.forEach(function(c) { %>
+        <option value="<%= c.id %>" <%= Number(creature.campaign_id) === c.id ? 'selected' : '' %>><%= c.name %></option>
+      <% }) %>
+    </select>
+  </label>
+
+  <label>Source
+    <select name="source_id">
+      <option value="">—</option>
+      <% sources.forEach(function(s) { %>
+        <option value="<%= s.id %>" <%= Number(creature.source_id) === s.id ? 'selected' : '' %>><%= s.name %></option>
+      <% }) %>
+    </select>
+  </label>
+
+  <label>Location
+    <select name="location_id">
+      <option value="">—</option>
+      <% locations.forEach(function(l) { %>
+        <option value="<%= l.id %>" <%= Number(creature.location_id) === l.id ? 'selected' : '' %>><%= l.name %></option>
+      <% }) %>
+    </select>
+  </label>
+
+  <label class="checkbox-field"><input type="checkbox" name="is_signature" <%= creature.is_signature ? 'checked' : '' %> /> Signature creature (exempt from value cap)</label>
+  <label class="checkbox-field"><input type="checkbox" name="is_morally_sensitive" <%= creature.is_morally_sensitive ? 'checked' : '' %> /> Morally sensitive</label>
+
+  <label class="checkbox-field"><input type="checkbox" id="use_manual_value" name="use_manual_value" <%= creature.use_manual_value ? 'checked' : '' %> /> Use manual Total Harvest Value</label>
+  <label>Manual Total Harvest Value (cp)
+    <input type="number" name="manual_total_harvest_value_cp" value="<%= creature.manual_total_harvest_value_cp || '' %>" />
+  </label>
+
+  <label>Description
+    <textarea name="description"><%= creature.description || '' %></textarea>
+  </label>
+
+  <label>GM notes
+    <textarea name="gm_notes"><%= creature.gm_notes || '' %></textarea>
+  </label>
+
+  <fieldset>
+    <legend>Harvest tags</legend>
+    <% var selectedTagIds = (creature.tags || []).map(function(t) { return t.id; }); %>
+    <div class="checkbox-list">
+      <% tags.forEach(function(tag) { %>
+        <label>
+          <input type="checkbox" name="tag_ids" value="<%= tag.id %>" <%= selectedTagIds.includes(tag.id) ? 'checked' : '' %> />
+          <%= tag.name %>
+        </label>
+      <% }) %>
+    </div>
+  </fieldset>
+
+  <button type="submit"><%= mode === 'create' ? 'Create' : 'Save' %></button>
+</form>
+
+<script src="<%= basePath %>/js/monster-form.js"></script>

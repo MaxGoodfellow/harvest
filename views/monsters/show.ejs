@@ -1,0 +1,132 @@
+<h1><%= creature.name %> <small>(Level <%= creature.level %>)</small></h1>
+
+<p>
+  <%= creature.size %> <%= creature.creature_type %> · <%= creature.rarity %> ·
+  <%= creature.intelligence_category %> · Tier <%= creature.harvest_tier %> ·
+  <%= creature.required_proficiency %>
+  <% if (creature.is_signature) { %><span class="chip active">Signature</span><% } %>
+  <% if (creature.archived_at) { %><span class="chip">Archived</span><% } %>
+</p>
+
+<p>Tags: <%= creature.tags.map(t => t.name).join(', ') || '—' %></p>
+
+<% if (showHumanoidWarning) { %>
+  <div class="warning">
+    Harvesting this creature may be considered desecration, monstrous behavior,
+    necromancy, or a serious crime in many communities. Consider reputation, law,
+    religion, and ally reactions.
+  </div>
+<% } %>
+
+<% if (allocationWarning.overCap) { %>
+  <div class="warning">
+    Components are allocated to <%= allocationWarning.sumPercentage %>% of this
+    creature's Total Harvest Value — over the 100% cap. Adjust value_percentage
+    on one or more components, or mark the creature as signature.
+  </div>
+<% } %>
+
+<p>
+  <strong>Base DC:</strong> <%= baseDc %><br />
+  <strong>Total Harvest Value:</strong> <%= formatCp(totalHarvestValueCp) %>
+  <% if (creature.use_manual_value) { %>(manual override)<% } %>
+</p>
+
+<% if (creature.description) { %><p><%= creature.description %></p><% } %>
+
+<details>
+  <summary>GM notes</summary>
+  <p><%= creature.gm_notes || 'No notes.' %></p>
+</details>
+
+<div class="actions no-print">
+  <a class="btn" href="<%= basePath %>/monsters/<%= creature.id %>/edit">Edit</a>
+  <form method="post" action="<%= basePath %>/monsters/<%= creature.id %>/duplicate">
+    <input type="hidden" name="_csrf" value="<%= csrfToken %>" />
+    <button type="submit" class="btn-secondary">Duplicate</button>
+  </form>
+  <% if (creature.archived_at) { %>
+    <form method="post" action="<%= basePath %>/monsters/<%= creature.id %>/unarchive">
+      <input type="hidden" name="_csrf" value="<%= csrfToken %>" />
+      <button type="submit" class="btn-secondary">Unarchive</button>
+    </form>
+  <% } else { %>
+    <form method="post" action="<%= basePath %>/monsters/<%= creature.id %>/archive">
+      <input type="hidden" name="_csrf" value="<%= csrfToken %>" />
+      <button type="submit" class="btn-secondary">Archive</button>
+    </form>
+  <% } %>
+  <a class="btn" href="<%= basePath %>/calculator?creatureId=<%= creature.id %>">Run Harvest Check</a>
+  <a class="btn" href="<%= basePath %>/inventory/new?creatureId=<%= creature.id %>">Add Material to Inventory</a>
+  <button type="button" class="btn-secondary" id="print-harvest-sheet">Print Harvest Sheet</button>
+</div>
+
+<h2>Components</h2>
+<table>
+  <thead>
+    <tr>
+      <th>Name</th><th>Tag</th><th>Skill</th><th>DC mod</th><th>Value %</th><th>Hazardous</th><th class="no-print"></th>
+    </tr>
+  </thead>
+  <tbody>
+    <% creature.components.forEach(function(c) { %>
+      <tr>
+        <td><%= c.name %></td>
+        <td><%= c.harvest_tag_name %></td>
+        <td>
+          <%= c.skill_name || '—' %>
+          <% if (c.alternateSkills && c.alternateSkills.length) { %>
+            or <%= c.alternateSkills.map(s => s.name).join(' or ') %>
+          <% } %>
+        </td>
+        <td><%= c.use_manual_dc ? c.manual_dc : c.base_dc_modifier %></td>
+        <td><%= c.use_fixed_value ? formatCp(c.fixed_crafting_value_cp) : (c.value_percentage + '%') %></td>
+        <td><%= c.is_hazardous ? (c.hazard_type_name || 'Yes') : '—' %></td>
+        <td class="no-print">
+          <a href="<%= basePath %>/monsters/<%= creature.id %>/components/<%= c.id %>/edit">Edit</a>
+          <form class="confirm-delete" data-confirm="Delete this component?" method="post" action="<%= basePath %>/monsters/<%= creature.id %>/components/<%= c.id %>/delete">
+            <input type="hidden" name="_csrf" value="<%= csrfToken %>" />
+            <button type="submit" class="btn-danger">Delete</button>
+          </form>
+        </td>
+      </tr>
+    <% }) %>
+    <% if (!creature.components.length) { %>
+      <tr><td colspan="7">No components yet.</td></tr>
+    <% } %>
+  </tbody>
+</table>
+<p class="no-print"><a class="btn" href="<%= basePath %>/monsters/<%= creature.id %>/components/new">+ Add Component</a></p>
+
+<% if (creature.signatureTable) { %>
+  <h2><%= creature.signatureTable.name %></h2>
+  <% if (creature.signatureTable.description) { %><p><%= creature.signatureTable.description %></p><% } %>
+  <table>
+    <thead>
+      <tr><th>Component</th><th>Skill</th><th>DC</th><th>Time</th><th>Crit Success</th><th>Success</th><th>Failure</th><th>Crit Failure</th><th>Crafting Uses</th></tr>
+    </thead>
+    <tbody>
+      <% creature.signatureTable.rows.forEach(function(row) { %>
+        <tr>
+          <td><%= row.name %></td>
+          <td>
+            <%= row.skill_name || '—' %>
+            <% if (row.alternateSkills && row.alternateSkills.length) { %>
+              or <%= row.alternateSkills.map(s => s.name).join(' or ') %>
+            <% } %>
+          </td>
+          <td>base_dc <%= row.dc_modifier >= 0 ? '+' + row.dc_modifier : row.dc_modifier %></td>
+          <td><%= row.time_display || formatMinutes(row.time_minutes) %></td>
+          <td><%= row.critical_success_text %></td>
+          <td><%= row.success_text %></td>
+          <td><%= row.failure_text %></td>
+          <td><%= row.critical_failure_text %></td>
+          <td><%= row.crafting_uses %></td>
+        </tr>
+      <% }) %>
+    </tbody>
+  </table>
+<% } %>
+
+<script src="<%= basePath %>/js/confirm-delete.js"></script>
+<script src="<%= basePath %>/js/print-button.js"></script>

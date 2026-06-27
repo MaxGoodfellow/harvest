@@ -1,0 +1,55 @@
+<h1><%= project.name %></h1>
+
+<p>
+  Status: <%= project.status %>
+  <% if (project.is_formula_required) { %><span class="chip">Formula required</span><% } %>
+  <% if (project.is_formula_unlocking) { %><span class="chip">Unlocks formula</span><% } %>
+</p>
+
+<% if (project.notes) { %><p><%= project.notes %></p><% } %>
+
+<p>
+  <strong>Item cost:</strong> <%= formatCp(project.item_gp_cost_cp) %><br />
+  <strong>Value applied:</strong> <%= formatCp(project.totalAppliedCp) %><br />
+  <strong>Remaining:</strong> <%= formatCp(Math.max(0, project.item_gp_cost_cp - project.totalAppliedCp)) %>
+  <% if (project.totalAppliedCp >= project.item_gp_cost_cp) { %>
+    <span class="chip active">Fully covered</span>
+  <% } %>
+</p>
+
+<p><a class="btn" href="<%= basePath %>/crafting/<%= project.id %>/edit">Edit</a></p>
+
+<h2>Materials applied</h2>
+<table>
+  <thead><tr><th>Name</th><th>Quality</th><th>Value applied</th><th></th></tr></thead>
+  <tbody>
+    <% project.materials.forEach(function(m) { %>
+      <tr>
+        <td><%= m.name %></td>
+        <td><%= m.quality %></td>
+        <td><%= formatCp(m.value_applied_cp) %></td>
+        <td>
+          <form method="post" action="<%= basePath %>/crafting/<%= project.id %>/materials/<%= m.id %>/detach">
+            <input type="hidden" name="_csrf" value="<%= csrfToken %>" />
+            <button type="submit" class="btn-secondary">Detach</button>
+          </form>
+        </td>
+      </tr>
+    <% }) %>
+    <% if (!project.materials.length) { %>
+      <tr><td colspan="4">No materials applied yet.</td></tr>
+    <% } %>
+  </tbody>
+</table>
+
+<h2>Apply a material from inventory</h2>
+<form method="post" action="<%= basePath %>/crafting/<%= project.id %>/materials">
+  <input type="hidden" name="_csrf" value="<%= csrfToken %>" />
+  <select name="materialsInventoryId" required>
+    <option value="">— Select an available material —</option>
+    <% availableMaterials.forEach(function(m) { %>
+      <option value="<%= m.id %>"><%= m.name %> (<%= m.quality %>, <%= formatCp(m.crafting_value_cp) %>)</option>
+    <% }) %>
+  </select>
+  <button type="submit">Apply</button>
+</form>

@@ -1,0 +1,662 @@
+/* ============================================================
+   Design tokens
+   ============================================================ */
+:root {
+  --bg: #14161a;
+  --surface: #1b1e24;
+  --surface-alt: #20242b;
+  --surface-hover: #262a32;
+  --border: #2b2f38;
+  --border-strong: #3a3f4a;
+
+  --text: #e8eaed;
+  --text-muted: #9aa1ad;
+  --text-faint: #6b7280;
+
+  --accent: #e0a458;
+  --accent-strong: #eab676;
+  --accent-text: #1a1306;
+
+  --danger: #e0645a;
+  --danger-strong: #e87b72;
+  --danger-text: #1a0d0b;
+
+  --success: #6fbf8b;
+
+  --radius: 10px;
+  --radius-sm: 6px;
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.3);
+  --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.35);
+
+  --font: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+}
+
+/* ============================================================
+   Base
+   ============================================================ */
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: var(--font);
+  background: var(--bg);
+  color: var(--text);
+  line-height: 1.55;
+  -webkit-font-smoothing: antialiased;
+}
+
+h1, h2, h3 {
+  font-weight: 650;
+  line-height: 1.25;
+  letter-spacing: -0.01em;
+}
+
+h1 {
+  font-size: 1.6rem;
+  margin: 0 0 1.25rem;
+}
+
+h2 {
+  font-size: 1.2rem;
+  margin: 2rem 0 0.9rem;
+  padding-top: 0.5rem;
+  border-top: 1px solid var(--border);
+}
+
+h1 + h2,
+.warning + h2 {
+  border-top: none;
+  padding-top: 0;
+}
+
+p {
+  color: var(--text);
+}
+
+a {
+  color: var(--accent);
+  text-decoration: none;
+}
+
+a:hover {
+  color: var(--accent-strong);
+  text-decoration: underline;
+}
+
+small {
+  color: var(--text-muted);
+  font-weight: 400;
+}
+
+code {
+  background: var(--surface-alt);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  padding: 0.1em 0.4em;
+  font-size: 0.9em;
+}
+
+hr {
+  border: none;
+  border-top: 1px solid var(--border);
+  margin: 1.5rem 0;
+}
+
+/* ============================================================
+   Header / nav
+   ============================================================ */
+.site-header {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  padding: 0.85rem 1.5rem;
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+  box-shadow: var(--shadow-sm);
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+
+.site-header .brand {
+  font-weight: 700;
+  font-size: 1.15rem;
+  color: var(--accent);
+  text-decoration: none;
+  margin-right: 1.5rem;
+  letter-spacing: -0.01em;
+}
+
+.site-header .brand:hover {
+  color: var(--accent-strong);
+  text-decoration: none;
+}
+
+.site-header nav {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.15rem;
+  flex: 1;
+}
+
+.site-header nav a {
+  color: var(--text-muted);
+  text-decoration: none;
+  padding: 0.45rem 0.75rem;
+  border-radius: var(--radius-sm);
+  font-size: 0.92rem;
+  font-weight: 500;
+  transition: background 0.15s ease, color 0.15s ease;
+}
+
+.site-header nav a:hover {
+  color: var(--text);
+  background: var(--surface-hover);
+  text-decoration: none;
+}
+
+.site-header nav a.active {
+  color: var(--accent-text);
+  background: var(--accent);
+}
+
+.site-header form {
+  background: none;
+  border: none;
+  padding: 0;
+  margin: 0;
+  box-shadow: none;
+}
+
+/* ============================================================
+   Layout
+   ============================================================ */
+main {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 2rem 1.5rem 4rem;
+}
+
+main.login-page {
+  max-width: 360px;
+  margin: 4.5rem auto;
+  padding: 0 1.5rem;
+}
+
+main.login-page h1 {
+  text-align: center;
+  color: var(--accent);
+  margin-bottom: 1.5rem;
+}
+
+main.login-page form {
+  max-width: none;
+}
+
+main.login-page button {
+  width: 100%;
+  margin-top: 1.25rem;
+}
+
+/* ============================================================
+   Tables — styled as cards
+   ============================================================ */
+table {
+  width: 100%;
+  border-collapse: collapse;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  overflow: hidden;
+  box-shadow: var(--shadow-sm);
+}
+
+thead th {
+  background: var(--surface-alt);
+  color: var(--text-muted);
+  font-size: 0.78rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+th, td {
+  text-align: left;
+  padding: 0.65rem 0.9rem;
+  border-bottom: 1px solid var(--border);
+  font-size: 0.92rem;
+}
+
+tbody tr:last-child td {
+  border-bottom: none;
+}
+
+tbody tr:hover {
+  background: var(--surface-hover);
+}
+
+td a {
+  font-weight: 500;
+}
+
+/* ============================================================
+   Forms — styled as cards
+   ============================================================ */
+form {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 1.5rem;
+  box-shadow: var(--shadow-sm);
+  max-width: 640px;
+}
+
+.no-card {
+  background: none;
+  border: none;
+  padding: 0;
+  box-shadow: none;
+  max-width: none;
+}
+
+form.inline,
+.site-header form,
+table form,
+li form {
+  background: none;
+  border: none;
+  padding: 0;
+  box-shadow: none;
+  max-width: none;
+  display: inline;
+}
+
+label {
+  display: block;
+  margin-top: 1rem;
+  margin-bottom: 0.3rem;
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: var(--text-muted);
+}
+
+label:first-child {
+  margin-top: 0;
+}
+
+label input,
+label select,
+label textarea {
+  margin-top: 0.35rem;
+}
+
+input, select, textarea {
+  width: 100%;
+  padding: 0.55rem 0.7rem;
+  background: var(--surface-alt);
+  border: 1px solid var(--border-strong);
+  color: var(--text);
+  border-radius: var(--radius-sm);
+  font-family: inherit;
+  font-size: 0.92rem;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+textarea {
+  min-height: 5rem;
+  resize: vertical;
+}
+
+input:hover, select:hover, textarea:hover {
+  border-color: var(--text-faint);
+}
+
+input:focus, select:focus, textarea:focus {
+  outline: none;
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px rgba(224, 164, 88, 0.18);
+}
+
+input[type="checkbox"] {
+  width: auto;
+  accent-color: var(--accent);
+  margin-top: 0;
+  vertical-align: middle;
+}
+
+fieldset {
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 0.85rem 1rem;
+  margin-top: 1rem;
+}
+
+legend {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--text-muted);
+  padding: 0 0.4rem;
+}
+
+::placeholder {
+  color: var(--text-faint);
+}
+
+.field-error {
+  color: var(--danger-strong);
+  font-size: 0.82rem;
+  margin: 0.25rem 0 0;
+}
+
+.checkbox-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem 1.2rem;
+}
+
+.checkbox-list label {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  margin: 0;
+  font-size: 0.88rem;
+  font-weight: 400;
+  color: var(--text);
+}
+
+.checkbox-field {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-top: 0.75rem;
+  font-size: 0.88rem;
+  font-weight: 400;
+  color: var(--text);
+}
+
+.preview-text {
+  font-size: 0.85rem;
+  color: var(--accent);
+  margin: 0.4rem 0 0;
+}
+
+.inline-field {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  width: auto;
+  margin: 0 0.75rem 0.75rem 0;
+  font-weight: 500;
+  color: var(--text-muted);
+  font-size: 0.85rem;
+}
+
+.inline-field select {
+  width: auto;
+}
+
+/* ============================================================
+   Buttons
+   ============================================================ */
+button, .btn, input[type="submit"] {
+  background: var(--accent);
+  color: var(--accent-text);
+  border: 1px solid transparent;
+  padding: 0.55rem 1.1rem;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 0.88rem;
+  text-decoration: none;
+  display: inline-block;
+  transition: background 0.15s ease, transform 0.05s ease, box-shadow 0.15s ease;
+}
+
+button:hover, .btn:hover {
+  background: var(--accent-strong);
+  text-decoration: none;
+  box-shadow: var(--shadow-sm);
+}
+
+button:active, .btn:active {
+  transform: translateY(1px);
+}
+
+button:disabled, .btn:disabled {
+  background: var(--surface-alt);
+  color: var(--text-faint);
+  cursor: not-allowed;
+  box-shadow: none;
+}
+
+.btn-secondary {
+  background: transparent;
+  color: var(--text);
+  border: 1px solid var(--border-strong);
+}
+
+.btn-secondary:hover {
+  background: var(--surface-hover);
+  color: var(--text);
+  border-color: var(--text-faint);
+}
+
+.btn-danger {
+  background: var(--danger);
+  color: var(--danger-text);
+}
+
+.btn-danger:hover {
+  background: var(--danger-strong);
+}
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem;
+  margin: 1rem 0;
+}
+
+.actions form {
+  margin: 0;
+}
+
+/* ============================================================
+   Alerts / chips / badges
+   ============================================================ */
+.warning {
+  background: rgba(224, 164, 88, 0.1);
+  border: 1px solid rgba(224, 164, 88, 0.4);
+  color: var(--text);
+  padding: 0.85rem 1.1rem;
+  border-radius: var(--radius);
+  margin: 1rem 0;
+}
+
+.warning ul {
+  margin: 0.5rem 0 0;
+  padding-left: 1.2rem;
+}
+
+.warning strong {
+  color: var(--accent-strong);
+}
+
+.filter-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-bottom: 1.25rem;
+}
+
+.filter-chips .chip {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  padding: 0.35rem 0.85rem;
+  font-size: 0.82rem;
+  font-weight: 500;
+  color: var(--text-muted);
+  text-decoration: none;
+  transition: background 0.15s ease, color 0.15s ease, border-color 0.15s ease;
+}
+
+.filter-chips .chip:hover {
+  color: var(--text);
+  border-color: var(--text-faint);
+  text-decoration: none;
+}
+
+.filter-chips .chip.active {
+  background: var(--accent);
+  color: var(--accent-text);
+  border-color: var(--accent);
+}
+
+/* standalone status chips (Signature / Archived / etc.) */
+td .chip, h1 .chip, p .chip {
+  display: inline-block;
+  background: var(--surface-alt);
+  border: 1px solid var(--border-strong);
+  color: var(--text-muted);
+  border-radius: 999px;
+  padding: 0.15rem 0.6rem;
+  font-size: 0.72rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  vertical-align: middle;
+  margin-left: 0.4rem;
+}
+
+td .chip.active, h1 .chip.active, p .chip.active {
+  background: rgba(224, 164, 88, 0.15);
+  border-color: var(--accent);
+  color: var(--accent-strong);
+}
+
+/* ============================================================
+   Misc components
+   ============================================================ */
+.dc-breakdown {
+  list-style: none;
+  padding: 0;
+  margin: 0.5rem 0;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  overflow: hidden;
+}
+
+.dc-breakdown li {
+  display: flex;
+  justify-content: space-between;
+  padding: 0.55rem 0.9rem;
+  border-bottom: 1px solid var(--border);
+  font-size: 0.92rem;
+}
+
+.dc-breakdown li:last-child {
+  border-bottom: none;
+}
+
+details {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 0.5rem 1rem;
+  margin: 1rem 0;
+}
+
+summary {
+  cursor: pointer;
+  font-weight: 600;
+  color: var(--text);
+  padding: 0.4rem 0;
+}
+
+details[open] summary {
+  margin-bottom: 0.5rem;
+  border-bottom: 1px solid var(--border);
+}
+
+details table {
+  box-shadow: none;
+}
+
+.toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.6rem;
+  margin-bottom: 1.25rem;
+  background: none;
+  border: none;
+  padding: 0;
+  box-shadow: none;
+  max-width: none;
+}
+
+.toolbar input {
+  width: auto;
+  flex: 1;
+  min-width: 200px;
+}
+
+.stat-grid {
+  display: flex;
+  gap: 1.1rem;
+  flex-wrap: wrap;
+  margin-bottom: 2rem;
+}
+
+.stat-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-sm);
+  padding: 1.1rem 1.4rem;
+  flex: 1;
+  min-width: 160px;
+}
+
+.stat-card .stat-value {
+  display: block;
+  font-size: 2rem;
+  font-weight: 700;
+  color: var(--accent);
+  line-height: 1.1;
+}
+
+.stat-card .stat-label {
+  color: var(--text-muted);
+  font-size: 0.85rem;
+}
+
+/* ============================================================
+   Print
+   ============================================================ */
+@media print {
+  .site-header, nav, .no-print {
+    display: none;
+  }
+
+  body {
+    background: #fff;
+    color: #000;
+  }
+
+  table, form, .warning, .dc-breakdown, details {
+    background: #fff;
+    color: #000;
+    box-shadow: none;
+    border-color: #999;
+  }
+
+  a {
+    color: #000;
+  }
+}

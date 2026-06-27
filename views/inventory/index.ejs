@@ -1,0 +1,32 @@
+<h1>Material Inventory</h1>
+
+<p><a class="btn" href="<%= basePath %>/inventory/new">+ Add Material</a></p>
+
+<div class="filter-chips">
+  <a class="chip <%= !filters.status ? 'active' : '' %>" href="<%= basePath %>/inventory">All</a>
+  <% STATUSES.forEach(function(s) { %>
+    <a class="chip <%= filters.status === s ? 'active' : '' %>" href="<%= basePath %>/inventory?status=<%= s %>"><%= s %></a>
+  <% }) %>
+</div>
+
+<table>
+  <thead>
+    <tr><th>Name</th><th>Creature</th><th>Quality</th><th>Value</th><th>Status</th><th>Preserved until</th><th></th></tr>
+  </thead>
+  <tbody>
+    <% items.forEach(function(i) { %>
+      <tr>
+        <td><%= i.name %></td>
+        <td><%= i.creature_name || '—' %></td>
+        <td><%= i.quality %></td>
+        <td><%= formatCp(i.crafting_value_cp) %></td>
+        <td><%= i.status %></td>
+        <td><%= i.preserved_until ? new Date(i.preserved_until).toISOString().slice(0,10) : '—' %></td>
+        <td><a href="<%= basePath %>/inventory/<%= i.id %>/edit">Edit</a></td>
+      </tr>
+    <% }) %>
+    <% if (!items.length) { %>
+      <tr><td colspan="7">No materials in inventory yet.</td></tr>
+    <% } %>
+  </tbody>
+</table>

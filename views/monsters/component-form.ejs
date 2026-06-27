@@ -1,0 +1,103 @@
+<h1><%= mode === 'create' ? 'Add component' : 'Edit component' %> — <%= creature.name %></h1>
+
+<% function err(field) { return (errors && errors[field]) ? '<p class="field-error">' + errors[field].join(', ') + '</p>' : ''; } %>
+
+<form method="post" action="<%= mode === 'create'
+  ? basePath + '/monsters/' + creature.id + '/components'
+  : basePath + '/monsters/' + creature.id + '/components/' + component.id %>">
+  <input type="hidden" name="_csrf" value="<%= csrfToken %>" />
+
+  <label>Name
+    <input type="text" name="name" value="<%= component.name || '' %>" required />
+  </label>
+  <%- err('name') %>
+
+  <label>Harvest tag
+    <select name="harvest_tag_id" required>
+      <% tags.forEach(function(tag) { %>
+        <option value="<%= tag.id %>" <%= Number(component.harvest_tag_id) === tag.id ? 'selected' : '' %>><%= tag.name %></option>
+      <% }) %>
+    </select>
+  </label>
+
+  <label>Primary skill
+    <select name="skill_id">
+      <option value="">—</option>
+      <% skills.forEach(function(s) { %>
+        <option value="<%= s.id %>" <%= Number(component.skill_id) === s.id ? 'selected' : '' %>><%= s.name %></option>
+      <% }) %>
+    </select>
+  </label>
+
+  <fieldset>
+    <legend>Alternate skills (other skills usable for this action)</legend>
+    <% var selectedAltSkillIds = component.alternateSkillIds || (component.alternateSkills || []).map(function(s) { return s.id; }); %>
+    <div class="checkbox-list">
+      <% skills.forEach(function(s) { %>
+        <label>
+          <input type="checkbox" name="alternate_skill_ids" value="<%= s.id %>" <%= selectedAltSkillIds.includes(s.id) ? 'checked' : '' %> />
+          <%= s.name %>
+        </label>
+      <% }) %>
+    </div>
+  </fieldset>
+
+  <label>Description
+    <textarea name="description"><%= component.description || '' %></textarea>
+  </label>
+
+  <label>Base DC modifier
+    <input type="number" name="base_dc_modifier" value="<%= component.base_dc_modifier || 0 %>" />
+  </label>
+
+  <label class="checkbox-field"><input type="checkbox" name="use_manual_dc" <%= component.use_manual_dc ? 'checked' : '' %> /> Use manual DC instead</label>
+  <label>Manual DC
+    <input type="number" name="manual_dc" value="<%= component.manual_dc || '' %>" />
+  </label>
+
+  <label class="checkbox-field"><input type="checkbox" name="use_fixed_value" <%= component.use_fixed_value ? 'checked' : '' %> /> Use fixed crafting value instead of %</label>
+  <label>Fixed crafting value (cp)
+    <input type="number" name="fixed_crafting_value_cp" value="<%= component.fixed_crafting_value_cp || '' %>" />
+  </label>
+
+  <label>Value % of Total Harvest Value
+    <input type="number" step="0.01" name="value_percentage" value="<%= component.value_percentage || '' %>" />
+  </label>
+  <%- err('value_percentage') %>
+
+  <label>Sale value % override (blank = use buyer default)
+    <input type="number" step="0.01" name="sale_value_percentage" value="<%= component.sale_value_percentage || '' %>" />
+  </label>
+
+  <label class="checkbox-field"><input type="checkbox" id="is_hazardous" name="is_hazardous" <%= component.is_hazardous ? 'checked' : '' %> /> Hazardous</label>
+
+  <label>Hazard type
+    <select name="hazard_type_id">
+      <option value="">—</option>
+      <% hazardTypes.forEach(function(h) { %>
+        <option value="<%= h.id %>" <%= Number(component.hazard_type_id) === h.id ? 'selected' : '' %>><%= h.name %> (<%= h.default_save_type %>)</option>
+      <% }) %>
+    </select>
+  </label>
+
+  <label>Hazard save type override
+    <input type="text" name="hazard_save_type" value="<%= component.hazard_save_type || '' %>" placeholder="e.g. Reflex" />
+  </label>
+
+  <label>Hazard DC modifier
+    <input type="number" name="hazard_dc_modifier" value="<%= component.hazard_dc_modifier || 0 %>" />
+  </label>
+
+  <label>Crafting uses
+    <textarea name="crafting_uses"><%= component.crafting_uses || '' %></textarea>
+  </label>
+
+  <label class="checkbox-field"><input type="checkbox" name="is_formula_required" <%= component.is_formula_required ? 'checked' : '' %> /> Formula required to craft with this</label>
+  <label class="checkbox-field"><input type="checkbox" name="is_formula_unlocking" <%= component.is_formula_unlocking ? 'checked' : '' %> /> Unlocks a formula when harvested</label>
+
+  <label>Sort order
+    <input type="number" name="sort_order" value="<%= component.sort_order || 0 %>" />
+  </label>
+
+  <button type="submit"><%= mode === 'create' ? 'Add' : 'Save' %></button>
+</form>

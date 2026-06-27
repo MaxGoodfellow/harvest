@@ -1,0 +1,55 @@
+<h1>Dashboard</h1>
+
+<form method="get" action="<%= basePath %>/monsters" class="toolbar">
+  <input type="text" name="search" placeholder="Search monsters by name…" />
+  <button type="submit">Search</button>
+</form>
+
+<div class="stat-grid">
+  <div class="stat-card">
+    <span class="stat-value"><%= total %></span>
+    <span class="stat-label">Monsters in DB</span>
+  </div>
+  <div class="stat-card">
+    <span class="stat-value"><%= signatureCount %></span>
+    <span class="stat-label">With signature tables</span>
+  </div>
+</div>
+
+<h2>By harvest tier</h2>
+<table>
+  <thead><tr><th>Tier</th><th>Count</th></tr></thead>
+  <tbody>
+    <% byTier.forEach(function(t) { %>
+      <tr><td><%= t.harvest_tier %></td><td><%= t.count %></td></tr>
+    <% }) %>
+  </tbody>
+</table>
+
+<h2>By creature type</h2>
+<table>
+  <thead><tr><th>Type</th><th>Count</th></tr></thead>
+  <tbody>
+    <% byCreatureType.forEach(function(t) { %>
+      <tr><td><%= t.creature_type %></td><td><%= t.count %></td></tr>
+    <% }) %>
+  </tbody>
+</table>
+
+<h2>Recently edited</h2>
+<table>
+  <thead><tr><th>Name</th><th>Level</th><th>Type</th><th>Updated</th></tr></thead>
+  <tbody>
+    <% recentlyEdited.forEach(function(c) { %>
+      <tr>
+        <td><a href="<%= basePath %>/monsters/<%= c.id %>"><%= c.name %></a></td>
+        <td><%= c.level %></td>
+        <td><%= c.creature_type %></td>
+        <td><%= new Date(c.updated_at).toLocaleString() %></td>
+      </tr>
+    <% }) %>
+    <% if (!recentlyEdited.length) { %>
+      <tr><td colspan="4">No monsters yet.</td></tr>
+    <% } %>
+  </tbody>
+</table>

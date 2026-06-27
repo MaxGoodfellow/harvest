@@ -1,0 +1,74 @@
+<h1><%= mode === 'create' ? 'New Buyer' : 'Edit ' + buyer.name %></h1>
+
+<% function err(field) { return (errors && errors[field]) ? '<p class="field-error">' + errors[field].join(', ') + '</p>' : ''; } %>
+
+<form method="post" action="<%= mode === 'create' ? basePath + '/buyers' : basePath + '/buyers/' + buyer.id %>">
+  <input type="hidden" name="_csrf" value="<%= csrfToken %>" />
+  <label>Name
+    <input type="text" name="name" value="<%= buyer.name || '' %>" required />
+  </label>
+  <%- err('name') %>
+
+  <label>Buyer type
+    <input type="text" name="buyer_type" value="<%= buyer.buyer_type || 'Standard' %>" placeholder="Standard, Specialist, Poor Market…" />
+  </label>
+
+  <label>Default sale %
+    <input type="number" step="0.01" name="default_sale_percentage" value="<%= buyer.default_sale_percentage !== undefined ? buyer.default_sale_percentage : 50 %>" required />
+  </label>
+  <%- err('default_sale_percentage') %>
+
+  <label>Location
+    <select name="location_id">
+      <option value="">—</option>
+      <% locations.forEach(function(l) { %>
+        <option value="<%= l.id %>" <%= Number(buyer.location_id) === l.id ? 'selected' : '' %>><%= l.name %></option>
+      <% }) %>
+    </select>
+  </label>
+
+  <label>Campaign
+    <select name="campaign_id">
+      <option value="">—</option>
+      <% campaigns.forEach(function(c) { %>
+        <option value="<%= c.id %>" <%= Number(buyer.campaign_id) === c.id ? 'selected' : '' %>><%= c.name %></option>
+      <% }) %>
+    </select>
+  </label>
+
+  <fieldset>
+    <legend>Accepted tags (blank = no restriction)</legend>
+    <% var acceptedIds = buyer.acceptedTagIds || []; %>
+    <div class="checkbox-list">
+      <% tags.forEach(function(tag) { %>
+        <label>
+          <input type="checkbox" name="accepted_tag_ids" value="<%= tag.id %>" <%= acceptedIds.includes(tag.id) ? 'checked' : '' %> />
+          <%= tag.name %>
+        </label>
+      <% }) %>
+    </div>
+  </fieldset>
+
+  <fieldset>
+    <legend>Rejected tags (hard block, shows the moral/legal warning)</legend>
+    <% var rejectedIds = buyer.rejectedTagIds || []; %>
+    <div class="checkbox-list">
+      <% tags.forEach(function(tag) { %>
+        <label>
+          <input type="checkbox" name="rejected_tag_ids" value="<%= tag.id %>" <%= rejectedIds.includes(tag.id) ? 'checked' : '' %> />
+          <%= tag.name %>
+        </label>
+      <% }) %>
+    </div>
+  </fieldset>
+
+  <label>Moral/legal warning
+    <textarea name="moral_legal_warning"><%= buyer.moral_legal_warning || '' %></textarea>
+  </label>
+
+  <label>Notes
+    <textarea name="notes"><%= buyer.notes || '' %></textarea>
+  </label>
+
+  <button type="submit"><%= mode === 'create' ? 'Create' : 'Save' %></button>
+</form>

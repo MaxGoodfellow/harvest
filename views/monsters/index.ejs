@@ -1,0 +1,55 @@
+<h1>Monsters</h1>
+
+<form method="get" action="<%= basePath %>/monsters" class="toolbar">
+  <input type="text" name="search" placeholder="Search by name…" value="<%= filters.search || '' %>" />
+  <button type="submit" class="btn-secondary">Search</button>
+  <a class="btn" href="<%= basePath %>/monsters/new">+ New Monster</a>
+</form>
+
+<div class="filter-chips">
+  <a class="chip <%= !filters.tag ? 'active' : '' %>" href="<%= basePath %>/monsters">All tags</a>
+  <% tags.forEach(function(tag) { %>
+    <a class="chip <%= filters.tag === tag.name ? 'active' : '' %>" href="<%= basePath %>/monsters?tag=<%= encodeURIComponent(tag.name) %>"><%= tag.name %></a>
+  <% }) %>
+</div>
+
+<div class="filter-chips">
+  <a class="chip <%= filters.hasSignatureTable ? 'active' : '' %>" href="<%= basePath %>/monsters?hasSignatureTable=1">Signature only</a>
+  <a class="chip <%= filters.hasHazardousComponents ? 'active' : '' %>" href="<%= basePath %>/monsters?hasHazardousComponents=1">Has hazards</a>
+  <a class="chip <%= filters.moralSensitivity ? 'active' : '' %>" href="<%= basePath %>/monsters?moralSensitivity=1">Morally sensitive</a>
+  <a class="chip <%= filters.includeArchived ? 'active' : '' %>" href="<%= basePath %>/monsters?includeArchived=1">Include archived</a>
+</div>
+
+<table>
+  <thead>
+    <tr>
+      <th>Name</th>
+      <th>Level</th>
+      <th>Size</th>
+      <th>Type</th>
+      <th>Tier</th>
+      <th>Tags</th>
+      <th></th>
+    </tr>
+  </thead>
+  <tbody>
+    <% creatures.forEach(function(creature) { %>
+      <tr>
+        <td>
+          <a href="<%= basePath %>/monsters/<%= creature.id %>"><%= creature.name %></a>
+          <% if (creature.is_signature) { %><span class="chip active">Signature</span><% } %>
+          <% if (creature.archived_at) { %><span class="chip">Archived</span><% } %>
+        </td>
+        <td><%= creature.level %></td>
+        <td><%= creature.size %></td>
+        <td><%= creature.creature_type %></td>
+        <td><%= creature.harvest_tier %></td>
+        <td><%= creature.tags.join(', ') %></td>
+        <td><a href="<%= basePath %>/monsters/<%= creature.id %>/edit">Edit</a></td>
+      </tr>
+    <% }) %>
+    <% if (!creatures.length) { %>
+      <tr><td colspan="7">No monsters match these filters.</td></tr>
+    <% } %>
+  </tbody>
+</table>
