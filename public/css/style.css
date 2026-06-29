@@ -200,6 +200,39 @@ main.login-page button {
   margin-top: 1.25rem;
 }
 
+.login-bg-image {
+  position: fixed;
+  inset: 0;
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  z-index: 0;
+}
+
+.login-bg-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(10, 11, 13, 0.55);
+  z-index: 1;
+}
+
+main.login-page {
+  position: relative;
+  z-index: 2;
+}
+
+.bg-preview {
+  width: 100%;
+  max-width: 480px;
+  height: 200px;
+  background-size: cover;
+  background-position: center;
+  background-color: var(--surface-alt);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  margin: 1rem 0;
+}
+
 /* ============================================================
    Tables — styled as cards
    ============================================================ */

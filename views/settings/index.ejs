@@ -1,0 +1,29 @@
+<h1>Settings</h1>
+
+<% if (error) { %><div class="warning"><%= error %></div><% } %>
+
+<h2>Login page background image</h2>
+<p>Shown full-screen behind the login form. PNG, JPEG, WebP, or GIF, up to 8MB.</p>
+
+<% if (loginBackgroundImage) { %>
+  <div class="bg-preview" style="background-image: url('<%= basePath %><%= loginBackgroundImage %>')"></div>
+  <div class="actions">
+    <form method="post" action="<%= basePath %>/settings/background-image/remove">
+      <input type="hidden" name="_csrf" value="<%= csrfToken %>" />
+      <button type="submit" class="btn-danger">Remove background image</button>
+    </form>
+  </div>
+<% } else { %>
+  <p><em>No background image set — the login page uses the default theme.</em></p>
+<% } %>
+
+<form method="post" action="<%= basePath %>/settings/background-image" id="bg-upload-form">
+  <input type="hidden" name="_csrf" value="<%= csrfToken %>" />
+  <label>Upload new image
+    <input type="file" id="bg-upload-file-input" accept="image/png,image/jpeg,image/webp,image/gif" />
+  </label>
+  <input type="hidden" name="imageData" id="bg-upload-data" />
+  <button type="submit" id="bg-upload-submit" disabled>Upload</button>
+</form>
+
+<script src="<%= basePath %>/js/upload-image.js"></script>

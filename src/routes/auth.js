@@ -1,6 +1,7 @@
 const express = require('express');
 const bcrypt = require('bcryptjs');
 const rateLimit = require('express-rate-limit');
+const lookups = require('../repositories/lookups');
 
 const router = express.Router();
 
@@ -12,8 +13,22 @@ const loginLimiter = rateLimit({
   message: 'Too many login attempts. Try again in a few minutes.',
 });
 
-router.get('/login', (req, res) => {
-  res.render('auth/login', { title: 'Log in', layout: false, error: null });
+async function loginViewData(extra) {
+  const settings = await lookups.settings();
+  return {
+    title: 'Log in',
+    layout: false,
+    backgroundImage: settings.login_background_image || null,
+    ...extra,
+  };
+}
+
+router.get('/login', async (req, res, next) => {
+  try {
+    res.render('auth/login', await loginViewData({ error: null }));
+  } catch (err) {
+    next(err);
+  }
 });
 
 router.post('/login', loginLimiter, async (req, res, next) => {
@@ -26,11 +41,7 @@ router.post('/login', loginLimiter, async (req, res, next) => {
       (await bcrypt.compare(password || '', process.env.ADMIN_PASSWORD_HASH));
 
     if (!validUsername || !validPassword) {
-      return res.status(401).render('auth/login', {
-        title: 'Log in',
-        layout: false,
-        error: 'Invalid username or password.',
-      });
+      return res.status(401).render('auth/login', await loginViewData({ error: 'Invalid username or password.' }));
     }
 
     req.session.isAuthenticated = true;

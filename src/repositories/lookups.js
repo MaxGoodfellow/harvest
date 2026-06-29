@@ -30,6 +30,14 @@ async function settings() {
   return map;
 }
 
+async function setSetting(key, value, valueType = 'string') {
+  await pool.query(
+    `INSERT INTO settings (\`key\`, value, value_type) VALUES (?, ?, ?)
+     ON DUPLICATE KEY UPDATE value = ?, value_type = ?`,
+    [key, value, valueType, value, valueType]
+  );
+}
+
 module.exports = {
   skills,
   lores,
@@ -45,4 +53,5 @@ module.exports = {
   hazardTypes,
   hazardDamageByLevel,
   settings,
+  setSetting,
 };

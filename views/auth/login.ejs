@@ -7,6 +7,10 @@
   <link rel="stylesheet" href="<%= basePath %>/css/style.css" />
 </head>
 <body>
+  <% if (backgroundImage) { %>
+    <div class="login-bg-image" style="background-image: url('<%= basePath %><%= backgroundImage %>')"></div>
+    <div class="login-bg-overlay"></div>
+  <% } %>
   <main class="login-page">
     <h1>Harvest</h1>
     <% if (error) { %><div class="warning"><%= error %></div><% } %>

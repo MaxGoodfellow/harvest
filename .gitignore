@@ -6,3 +6,4 @@ backups/*.sql
 .DS_Store
 .claude/
 tools/
+public/uploads/

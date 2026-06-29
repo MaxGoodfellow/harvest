@@ -18,6 +18,7 @@ const inventoryRouter = require('./routes/inventory');
 const sessionsRouter = require('./routes/sessions');
 const craftingRouter = require('./routes/crafting');
 const importExportRouter = require('./routes/importExport');
+const settingsRouter = require('./routes/settings');
 const { formatCp, formatMinutes, formatMinutesRange } = require('./lib/money');
 
 const BASE_PATH = process.env.BASE_PATH || '';
@@ -98,6 +99,7 @@ router.use('/inventory', inventoryRouter);
 router.use('/sessions', sessionsRouter);
 router.use('/crafting', craftingRouter);
 router.use('/import-export', importExportRouter);
+router.use('/settings', settingsRouter);
 
 app.use(BASE_PATH, router);
 app.locals.basePath = BASE_PATH;
