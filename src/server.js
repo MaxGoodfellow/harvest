@@ -37,6 +37,14 @@ app.use(
       directives: {
         defaultSrc: ["'self'"],
         styleSrc: ["'self'"],
+        // Helmet defaults style-src-attr to whatever style-src is ('self',
+        // no 'unsafe-inline' here), which silently blocks every inline
+        // style="..." attribute — including dynamic ones like the login/
+        // settings background-image URLs. Style injection is much lower
+        // severity than script injection (no code execution), so allowing
+        // it here while keeping script-src/script-src-attr locked down is
+        // the standard tradeoff.
+        styleSrcAttr: ["'unsafe-inline'"],
         scriptSrc: ["'self'"],
         imgSrc: ["'self'", 'data:'],
       },
