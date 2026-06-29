@@ -233,6 +233,38 @@ main.login-page {
   margin: 1rem 0;
 }
 
+.crop-tool {
+  margin-top: 1rem;
+}
+
+.crop-viewport {
+  width: 100%;
+  max-width: 480px;
+  aspect-ratio: 16 / 9;
+  overflow: hidden;
+  position: relative;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--surface-alt);
+  cursor: grab;
+  touch-action: none;
+}
+
+.crop-viewport.dragging {
+  cursor: grabbing;
+}
+
+.crop-viewport img {
+  position: absolute;
+  top: 0;
+  left: 0;
+  max-width: none;
+  max-height: none;
+  user-select: none;
+  -webkit-user-drag: none;
+  pointer-events: none;
+}
+
 /* ============================================================
    Tables — styled as cards
    ============================================================ */

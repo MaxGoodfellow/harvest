@@ -3,7 +3,7 @@
 <% if (error) { %><div class="warning"><%= error %></div><% } %>
 
 <h2>Login page background image</h2>
-<p>Shown full-screen behind the login form. PNG, JPEG, WebP, or GIF, up to 8MB.</p>
+<p>Shown full-screen behind the login form. Drag to reposition, zoom to crop tighter. Source can be PNG, JPEG, WebP, or GIF — saved as a JPEG crop.</p>
 
 <% if (loginBackgroundImage) { %>
   <div class="bg-preview" style="background-image: url('<%= basePath %><%= loginBackgroundImage %>')"></div>
@@ -19,9 +19,20 @@
 
 <form method="post" action="<%= basePath %>/settings/background-image" id="bg-upload-form">
   <input type="hidden" name="_csrf" value="<%= csrfToken %>" />
-  <label>Upload new image
+  <label>Choose an image to crop
     <input type="file" id="bg-upload-file-input" accept="image/png,image/jpeg,image/webp,image/gif" />
   </label>
+
+  <div id="crop-tool" class="crop-tool" hidden>
+    <div class="crop-viewport" id="crop-viewport">
+      <img id="crop-image" alt="" />
+    </div>
+    <label>Zoom
+      <input type="range" id="crop-zoom" min="100" max="300" value="100" />
+    </label>
+    <p class="preview-text">Drag the image to reposition it — it's saved exactly as framed here.</p>
+  </div>
+
   <input type="hidden" name="imageData" id="bg-upload-data" />
   <button type="submit" id="bg-upload-submit" disabled>Upload</button>
 </form>
